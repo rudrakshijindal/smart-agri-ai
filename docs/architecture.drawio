@@ -1,0 +1,84 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="GoGPvjymCg-lhe3AOZUH">
+    <mxGraphModel dx="1030" dy="567" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="User (Farmer)" vertex="1">
+          <mxGeometry height="50" width="100" x="360" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Web App (Streamlit)" vertex="1">
+          <mxGeometry height="50" width="100" x="360" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-3" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points" />
+            <mxPoint x="410" y="80" as="sourcePoint" />
+            <mxPoint x="410" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Backend (Python)" vertex="1">
+          <mxGeometry height="50" width="100" x="355" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-5" edge="1" parent="1" source="d5zG3l6-saGVBzkrXo5a-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;innerLoopWaypoints=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.836;entryY=-0.072;entryDx=0;entryDy=0;entryPerimeter=0;defaultLabelBackgroundColor=page;" target="d5zG3l6-saGVBzkrXo5a-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-7" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="400" y="200" as="sourcePoint" />
+            <mxPoint x="400" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Leaf Disease Model (CNN)" vertex="1">
+          <mxGeometry height="50" width="100" x="80" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Yield Prediction Model" vertex="1">
+          <mxGeometry height="60" width="115" x="345" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Irrigation Module" vertex="1">
+          <mxGeometry height="50" width="100" x="610" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-11" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="340" y="280" as="sourcePoint" />
+            <mxPoint x="120" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-12" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" x="-0.2544" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="320" />
+            </Array>
+            <mxPoint x="410" y="310" as="sourcePoint" />
+            <mxPoint x="410" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-13" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;width=10;endSize=10;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="470" y="280" as="sourcePoint" />
+            <mxPoint x="650" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Treatment Advice Database" vertex="1">
+          <mxGeometry height="60" width="120" x="140" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Weather API (Open-Meteo)" vertex="1">
+          <mxGeometry height="60" width="120" x="550" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-16" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="120" y="410" as="sourcePoint" />
+            <mxPoint x="180" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5zG3l6-saGVBzkrXo5a-17" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points" />
+            <mxPoint x="660" y="390" as="sourcePoint" />
+            <mxPoint x="590" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
