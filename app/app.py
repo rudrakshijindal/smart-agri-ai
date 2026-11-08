@@ -2,7 +2,9 @@ import json
 import sys
 from pathlib import Path
 
+import joblib
 import numpy as np
+import pandas as pd
 import streamlit as st
 from PIL import Image
 
@@ -41,10 +43,12 @@ st.markdown("""
 .bar-bg {background:#e4ece0; border-radius:99px; height:12px;}
 .bar-fg {height:12px; border-radius:99px;}
 .soon {opacity: .85; border-style: dashed;}
+.done {border-left: 6px solid #2e7d32;}
 </style>
 """, unsafe_allow_html=True)
 
 
+# ---------------- loaders ----------------
 @st.cache_resource
 def load_model():
     import tensorflow as tf
@@ -56,6 +60,16 @@ def load_labels():
     names = json.loads((ROOT / "models" / "class_names.json").read_text())
     info = json.loads((ROOT / "models" / "class_info.json").read_text())
     return names, info
+
+
+@st.cache_resource
+def load_yield_model():
+    return joblib.load(ROOT / "models" / "yield_model.joblib")
+
+
+@st.cache_data
+def load_yield_options():
+    return json.loads((ROOT / "models" / "yield_options.json").read_text())
 
 
 def predict(img):
@@ -73,37 +87,42 @@ def bar(label, p, top=False):
             f"<div class='bar-fg' style='width:{p*100:.1f}%;background:{color}'></div></div></div>")
 
 
+# ---------------- sidebar ----------------
 st.sidebar.markdown("## 🌿 AgriSense AI")
-page = st.sidebar.radio("Navigate", ["🏠 Home", "🔬 Disease Detection",
-                                      "📊 Model Performance", "🚀 Roadmap"],
-                        label_visibility="collapsed")
+page = st.sidebar.radio(
+    "Navigate",
+    ["🏠 Home", "🔬 Disease Detection", "🌾 Yield Prediction",
+     "📊 Model Performance", "🚀 Roadmap"],
+    label_visibility="collapsed",
+)
 st.sidebar.caption("3rd-year project: Smart Agriculture using AI")
 
 # ---------------- HOME ----------------
 if page == "🏠 Home":
     st.markdown("""<div class='hero'><h1>🌿 AgriSense AI</h1>
     <p>An AI-powered assistant that helps farmers detect crop leaf diseases early,
-    get treatment guidance, and make smarter decisions.</p></div>""", unsafe_allow_html=True)
+    estimate yield, and make smarter decisions.</p></div>""", unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
-    for col, num, lbl in [(c1, "97%", "Test accuracy"), (c2, "38", "Disease classes"),
-                          (c3, "54,305", "Training images"), (c4, "14", "Crops covered")]:
+    for col, num, lbl in [(c1, "97%", "Disease model accuracy"), (c2, "38", "Disease classes"),
+                          (c3, "0.94", "Yield model R²"), (c4, "235K", "Yield records")]:
         col.markdown(f"<div class='stat'><div class='num'>{num}</div>"
                      f"<div class='lbl'>{lbl}</div></div>", unsafe_allow_html=True)
 
     st.write("")
     a, b, c = st.columns(3)
-    a.markdown("<div class='card'><h3>🔬 Disease Detection</h3>Upload a leaf photo and "
+    a.markdown("<div class='card done'><h3>🔬 Disease Detection</h3>Upload a leaf photo and "
                "get the disease, confidence, and treatment advice in seconds.</div>",
                unsafe_allow_html=True)
-    b.markdown("<div class='card'><h3>📊 Transparent Results</h3>See accuracy, the confusion "
-               "matrix, and which diseases the model finds hardest.</div>",
+    b.markdown("<div class='card done'><h3>🌾 Yield Prediction</h3>Estimate tonnes per hectare "
+               "for any state, district, crop and season using a Random Forest model.</div>",
                unsafe_allow_html=True)
-    c.markdown("<div class='card'><h3>🚀 Growing Platform</h3>Yield prediction, irrigation "
-               "advice, and weather forecasts are coming next.</div>", unsafe_allow_html=True)
+    c.markdown("<div class='card soon'><h3>🚀 Coming Next</h3>Weather forecast and smart "
+               "irrigation advice.</div>", unsafe_allow_html=True)
 
     st.write("")
-    st.info("👈 Open **Disease Detection** in the sidebar to try it with your own leaf photo.")
+    st.info("👈 Use the sidebar to try **Disease Detection** with a leaf photo, or "
+            "**Yield Prediction** for your crop.")
 
 # ---------------- DETECTION ----------------
 elif page == "🔬 Disease Detection":
@@ -156,10 +175,49 @@ elif page == "🔬 Disease Detection":
         st.caption("AI suggestion only. Please confirm with a local agriculture expert before "
                    "applying any treatment.")
 
+# ---------------- YIELD ----------------
+elif page == "🌾 Yield Prediction":
+    st.title("🌾 Crop Yield Prediction")
+    st.caption("Estimate yield per hectare from historical district-level records "
+               "(India, 1997 to 2015).")
+
+    if not (ROOT / "models" / "yield_model.joblib").exists():
+        st.error("Yield model not found. Put `yield_model.joblib` and `yield_options.json` "
+                 "in the `models` folder.")
+        st.stop()
+
+    opts = load_yield_options()
+
+    c1, c2 = st.columns(2)
+    state = c1.selectbox("State", opts["states"])
+    district = c2.selectbox("District", opts["districts"][state])
+    c3, c4 = st.columns(2)
+    crop = c3.selectbox("Crop", opts["crops"])
+    season = c4.selectbox("Season", opts["seasons"])
+    c5, c6 = st.columns(2)
+    area = c5.number_input("Area (hectares)", min_value=0.1, value=2.0, step=0.5)
+    year = c6.number_input("Year", min_value=opts["year_min"], max_value=2035,
+                           value=opts["year_max"], step=1)
+
+    if st.button("Predict yield", type="primary"):
+        row = pd.DataFrame([{
+            "State_Name": state, "District_Name": district, "Season": season,
+            "Crop": crop, "Crop_Year": int(year), "Area": float(area),
+        }])
+        y = float(np.expm1(load_yield_model().predict(row)[0]))
+        st.markdown(f"<div class='result ok'><span class='badge'>ESTIMATE</span>"
+                    f"<h2>{y:.2f} tonnes per hectare</h2>"
+                    f"<div class='sub'>For {area} ha: about {y*area:.1f} tonnes total</div></div>",
+                    unsafe_allow_html=True)
+        st.caption("Estimate from historical records. Real yield also depends on weather, soil "
+                   "and management. Weather inputs arrive in the next module.")
+
 # ---------------- PERFORMANCE ----------------
 elif page == "📊 Model Performance":
     st.title("📊 Model Performance")
-    st.write("Model: **MobileNetV2** (transfer learning, 2-phase fine-tuning) trained on the "
+
+    st.header("Leaf disease model")
+    st.write("**MobileNetV2** (transfer learning, 2-phase fine-tuning) trained on the "
              "PlantVillage dataset with a 70/15/15 train/validation/test split.")
 
     c1, c2, c3, c4 = st.columns(4)
@@ -196,18 +254,33 @@ elif page == "📊 Model Performance":
                "is usually lower, which is why the app shows a confidence score and "
                "asks for a clearer photo when unsure.")
 
+    st.divider()
+    st.header("Yield prediction model")
+    st.write("Three regression models compared on about 235,000 district-level records. "
+             "The target is yield (tonnes per hectare), trained on a log scale. "
+             "The best model is a **Random Forest**.")
+
+    yp = ROOT / "docs" / "yield_results.csv"
+    if yp.exists():
+        st.dataframe(pd.read_csv(yp), use_container_width=True, hide_index=True)
+    yi = ROOT / "docs" / "yield_actual_vs_pred.png"
+    if yi.exists():
+        st.image(str(yi), caption="Actual vs predicted yield (Random Forest, test set)", width=420)
+
+    st.info("The yield test set is a random split, so rows come from the same districts and "
+            "years as training. Forecasts for a brand-new season are expected to be less "
+            "accurate than the R² shown here.")
+
 # ---------------- ROADMAP ----------------
 else:
     st.title("🚀 Roadmap")
     st.write("What's built and what's coming next.")
     st.success("✅ **Done:** Leaf disease detection (97% test accuracy, 38 classes)")
-    a, b, c = st.columns(3)
-    a.markdown("<div class='card soon'><h3>🌾 Yield Prediction</h3>Predict yield per hectare "
-               "from crop, state, season, area and rainfall.<br><br><b>Status: in progress</b></div>",
+    st.success("✅ **Done:** Yield prediction (Random Forest, R² 0.94)")
+    a, b = st.columns(2)
+    a.markdown("<div class='card soon'><h3>⛅ Weather</h3>Live conditions and 7-day forecast "
+               "for the farmer's location.<br><br><b>Status: next</b></div>",
                unsafe_allow_html=True)
     b.markdown("<div class='card soon'><h3>💧 Irrigation Advice</h3>Daily water requirement "
-               "using evapotranspiration and crop stage.<br><br><b>Status: planned</b></div>",
-               unsafe_allow_html=True)
-    c.markdown("<div class='card soon'><h3>⛅ Weather</h3>Live conditions and 7-day forecast "
-               "for the farmer's location.<br><br><b>Status: planned</b></div>",
+               "using evapotranspiration, rainfall and crop stage.<br><br><b>Status: planned</b></div>",
                unsafe_allow_html=True)

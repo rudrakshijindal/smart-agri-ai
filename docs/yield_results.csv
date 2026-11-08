@@ -1,0 +1,4 @@
+Model,R2,MAE (t/ha),RMSE (t/ha)
+Ridge (linear),0.765,1.65,4.89
+Random Forest,0.936,0.717,2.554
+Hist Gradient Boosting,0.897,1.031,3.24
