@@ -182,7 +182,7 @@ st.sidebar.markdown("## 🌿 AgriSense AI")
 page = st.sidebar.radio(
     "Navigate",
     ["🏠 Home", "🔬 Disease Detection", "🌾 Yield Prediction", "⛅ Weather",
-     "💧 Irrigation Advice", "📊 Model Performance", "🚀 Roadmap"],
+     "💧 Irrigation Advice", "📊 Model Performance", "ℹ️ About", "🚀 Roadmap"],
     label_visibility="collapsed",
 )
 st.sidebar.caption("3rd-year project: Smart Agriculture using AI")
@@ -222,6 +222,8 @@ elif page == "🔬 Disease Detection":
     st.title("🔬 Leaf Disease Detection")
     st.caption("Upload a clear, close photo of a single leaf. Works best with one leaf "
                "against a plain background.")
+    st.info("Tip: this model was trained mostly on clean single-leaf photos. For best results use "
+            "good light, one leaf, and a plain background.")
 
     threshold = st.slider("Minimum confidence to trust a result", 0.5, 0.95, 0.70, 0.05)
     file = st.file_uploader("Upload leaf image", type=["jpg", "jpeg", "png"])
@@ -475,6 +477,16 @@ elif page == "📊 Model Performance":
                "is usually lower, which is why the app shows a confidence score and "
                "asks for a clearer photo when unsure.")
 
+    st.subheader("Fine-tuning on real field photos")
+    st.write("After the first version scored low on messy real photos, the model was fine-tuned "
+             "on a mix of PlantVillage and PlantDoc images. Results on a held-out PlantDoc set:")
+    st.dataframe([
+        {"Test": "Real photos, top-1", "Before": "21.2%", "After": "63.5%"},
+        {"Test": "Real photos, top-3", "Before": "43.2%", "After": "86.0%"},
+        {"Test": "PlantVillage subset, top-1", "Before": "96.6%", "After": "95.7%"},
+        {"Test": "PlantVillage subset, top-3", "Before": "99.5%", "After": "99.6%"},
+    ], use_container_width=True, hide_index=True)
+
     st.divider()
     st.header("Yield prediction model")
     st.write("Three regression models compared on about 235,000 district-level records. "
@@ -490,17 +502,40 @@ elif page == "📊 Model Performance":
             "years as training. Forecasts for a brand-new season are expected to be less "
             "accurate than the R² shown here.")
 
+# ---------------- ABOUT ----------------
+elif page == "ℹ️ About":
+    st.title("ℹ️ About This Project")
+    st.write("**AgriSense AI** is a 3rd-year project that combines computer vision, machine "
+             "learning and weather data to support farmers' day-to-day decisions.")
+    a, b = st.columns(2)
+    a.markdown("<div class='card'><h3>How it works</h3><ul>"
+               "<li><b>Disease detection:</b> MobileNetV2 CNN (transfer learning), 38 classes</li>"
+               "<li><b>Yield prediction:</b> Random Forest on district-level records</li>"
+               "<li><b>Weather:</b> Open-Meteo API (live and 7-day forecast)</li>"
+               "<li><b>Irrigation:</b> FAO evapotranspiration × crop coefficient, minus effective rain</li>"
+               "</ul></div>", unsafe_allow_html=True)
+    b.markdown("<div class='card'><h3>Limitations</h3><ul>"
+               "<li>Disease model works best on a single leaf with a plain background</li>"
+               "<li>Accuracy is lower on messy real-field photos (see Model Performance)</li>"
+               "<li>Yield estimates use historical data and ignore this season's weather</li>"
+               "<li>Irrigation is a simplified water balance, so check the soil by hand</li>"
+               "</ul></div>", unsafe_allow_html=True)
+    st.write("")
+    st.markdown("**Datasets:** PlantVillage, PlantDoc, Crop Production in India (Kaggle), "
+                "Open-Meteo weather API.")
+    st.markdown("**Team:** add your name, roll number, guide and college here.")
+
 # ---------------- ROADMAP ----------------
 else:
     st.title("🚀 Roadmap")
-    st.success("✅ **Done:** Leaf disease detection (97% test accuracy, 38 classes)")
+    st.success("✅ **Done:** Leaf disease detection (97% on clean photos, fine-tuned for real photos)")
     st.success("✅ **Done:** Yield prediction (Random Forest, R² 0.94)")
-    st.success("✅ **Done:** Weather forecast and farming alerts (Open-Meteo)")
+    st.success("✅ **Done:** Weather forecast and farming alerts")
     st.success("✅ **Done:** Irrigation advice (FAO evapotranspiration method)")
     a, b, c = st.columns(3)
-    a.markdown("<div class='card soon'><h3>🧪 Real-world testing</h3>Test the disease model on "
-               "field photos and report accuracy honestly.</div>", unsafe_allow_html=True)
-    b.markdown("<div class='card soon'><h3>🌐 Deployment</h3>Publish the app online so "
+    a.markdown("<div class='card soon'><h3>🌐 Deployment</h3>Publish the app online so "
                "anyone can open it from a phone.</div>", unsafe_allow_html=True)
-    c.markdown("<div class='card soon'><h3>📡 Soil sensors (optional)</h3>ESP32 soil-moisture "
-               "sensor feeding live data into irrigation advice.</div>", unsafe_allow_html=True)
+    b.markdown("<div class='card soon'><h3>🗣️ Hindi interface</h3>Multilingual UI for "
+               "farmers.</div>", unsafe_allow_html=True)
+    c.markdown("<div class='card soon'><h3>📡 Soil sensors</h3>ESP32 soil-moisture sensor "
+               "feeding live data into irrigation advice.</div>", unsafe_allow_html=True)
